@@ -2,20 +2,38 @@ import { Pool } from 'pg';
 import { env } from '../config/env';
 
 export class PostgresService {
-    private pool = new Pool({
-        host: env.DB_HOST,
-        port: Number(env.DB_PORT || '5432'),
-        user: env.DB_USER,
-        password: env.DB_PASSWORD,
-        database: env.DB_DATABASE,
-        ssl: {
-            rejectUnauthorized: false // Required for Render PostgreSQL connections
-        },
-        // Connection timeout and retry settings for better reliability
-        connectionTimeoutMillis: 10000,
-        max: 20, // Maximum number of clients in the pool
-        idleTimeoutMillis: 30000
-    });
+    private pool: Pool;
+
+    constructor() {
+        // Check if DATABASE_URL is available
+        if (env.DATABASE_URL) {
+            // Use the connection string directly
+            this.pool = new Pool({
+                connectionString: env.DATABASE_URL,
+                ssl: {
+                    rejectUnauthorized: false // Required for Render PostgreSQL connections
+                },
+                connectionTimeoutMillis: 10000,
+                max: 20,
+                idleTimeoutMillis: 30000
+            });
+        } else {
+            // Fall back to individual parameters if DATABASE_URL is not available
+            this.pool = new Pool({
+                host: env.DB_HOST,
+                port: Number(env.DB_PORT || '5432'),
+                user: env.DB_USER,
+                password: env.DB_PASSWORD,
+                database: env.DB_DATABASE,
+                ssl: {
+                    rejectUnauthorized: false
+                },
+                connectionTimeoutMillis: 10000,
+                max: 20,
+                idleTimeoutMillis: 30000
+            });
+        }
+    }
 
     async testConnection(): Promise<boolean> {
         const client = await this.pool.connect();
@@ -100,9 +118,9 @@ export class PostgresService {
                     post.categories,
                     post.crawled,
                     post.updated,
-                    post.thread || post.thread_data, // Handle both naming conventions
+                    post.thread || post.thread_data,
                     post.entities,
-                    post.social || post.social_data  // Handle both naming conventions
+                    post.social || post.social_data
                 ]);
             }
            

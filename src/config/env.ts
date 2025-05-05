@@ -11,4 +11,5 @@ export const env = {
     WEBZ_BASE_URL: process.env.WEBZ_API_URL!,
     FETCH_QUERY: process.env.FETCH_QUERY, // future: dynamic
     REQUEST_TIMEOUT_MS: 5000,
+    DATABASE_URL: process.env.DATABASE_URL, // for Render.com
 };
