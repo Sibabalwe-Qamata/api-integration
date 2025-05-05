@@ -5,20 +5,18 @@ export class PostgresService {
     private pool: Pool;
 
     constructor() {
-        // Check if DATABASE_URL is available
         if (env.DATABASE_URL) {
-            // Use the connection string directly
             this.pool = new Pool({
                 connectionString: env.DATABASE_URL,
                 ssl: {
-                    rejectUnauthorized: false // Required for Render PostgreSQL connections
+                    rejectUnauthorized: false 
                 },
                 connectionTimeoutMillis: 10000,
                 max: 20,
                 idleTimeoutMillis: 30000
             });
         } else {
-            // Fall back to individual parameters if DATABASE_URL is not available
+    
             this.pool = new Pool({
                 host: env.DB_HOST,
                 port: Number(env.DB_PORT || '5432'),
@@ -83,8 +81,9 @@ export class PostgresService {
         const client = await this.pool.connect();
         try {
             await client.query('BEGIN');
-           
+    
             for (const post of posts) {
+            
                 await client.query(`
                     INSERT INTO posts (
                         uuid, url, title, author, published, text,
