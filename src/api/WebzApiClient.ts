@@ -20,7 +20,6 @@ export class WebzApiClient {
         };
 
         if (next) params.next = next;
-        console.debug('Fetching posts with params:', params);
         try {
             const response = await axios.get(`${env.WEBZ_BASE_URL}/newsApiLite`, {
                 params,
